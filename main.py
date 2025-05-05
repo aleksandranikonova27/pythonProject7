@@ -149,6 +149,6 @@ if __name__ == '__main__':
     db_sess = db_session.create_session()
     admin = Admin(app, name='Админка', template_mode='bootstrap3')
     admin.add_view(ModelView(Admins, db_sess, name='Админы'))
-    admin.add_view(ModelView(Media, db_sess, name='Управления медиа'))
+    admin.add_view(ModelView(Media, db_sess, name='Управление медиа'))
     admin.add_view(ModelView(Order, db_sess, name='Заявки'))
     app.run(port=8080, host='127.0.0.1')
