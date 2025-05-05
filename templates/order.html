@@ -5,8 +5,10 @@
     <h1>Заявка для связи с вами</h1>
     <div>
         <form class="order_form" method="post">
-            <p>{{form.name}}</p>
-            <p>{{form.phone}}</p>
+            <p>{{form.name.label}}</p>
+            <p>{{form.name(class="form-control")}}</p>
+            <p>{{form.phone.label}}</p>
+            <p>{{form.phone(class="form-control")}}</p>
             <div class="form-group">
                 <label for="classSelect">Тип мероприятия:</label>
                 <select class="form-control" id="classSelect" name="class">
@@ -18,10 +20,13 @@
                     <option value="5">спортивное мероприятие</option>
                 </select>
             </div>
-            <p>{{form.count_of_goest}}</p>
-            <p>{{form.need_date}}</p>
-            <div>{{form.wishes}}</div>
-            <button type="submit" class="btn btn-primary">{form.submit}</button>
+            <p>{{form.count_of_goest.label}}</p>
+            <p>{{form.count_of_goest(class="form-control")}}</p>
+            <p>{{form.need_date.label}}</p>
+            <p>{{form.need_date(class="form-control")}}</p>
+            <div>{{form.wishes.label}}</div>
+            <div>{{form.wishes(class="form-control")}}</div>
+            <button type="submit" class="btn btn-primary">Отправить</button>
         </form>
     </div>
 </form>
