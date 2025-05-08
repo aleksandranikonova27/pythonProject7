@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, TextAreaField, SubmitField, HiddenField
+from wtforms import StringField, TextAreaField, SubmitField, HiddenField, SelectField
 from wtforms.validators import DataRequired
 from flask_wtf.file import FileField, FileAllowed, FileRequired
 
@@ -8,6 +8,7 @@ class MediaAddForm(FlaskForm):
     upload = FileField('image',
                        validators=[FileRequired(), FileAllowed(['jpg', 'png', 'gif', 'mp4'], 'Допустимы только JPG, PNG, GIF, MP4')])
     title = StringField("Название", validators=[DataRequired()])
+    events = SelectField("Мероприятие", choices=[], validators=[DataRequired()])
     descr = TextAreaField("Описание")
     submit = SubmitField('Отправить')
 

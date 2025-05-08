@@ -20,6 +20,23 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 
 
+def give_events_list():
+    db_sess = db_session.create_session()
+    events_list = list(db_sess.query(TypeOfEvents).order_by(TypeOfEvents.id.desc()).all())
+    out = []
+    for i in events_list:
+        n, e = i.id, str(i.events)
+        out.append((n, e))
+    return out
+
+
+def get_photos_by_event(event_id):
+    db_sess = db_session.create_session()
+    med = db_sess.query(Media).filter(Media.type_of_events == event_id).all()
+    if med:
+        return [f'/static/thumb/{photo.fname}' for photo in med]
+
+
 @login_manager.user_loader
 def load_user(user_id):
     db_sess = db_session.create_session()
@@ -34,25 +51,24 @@ def index():
 
 
 @app.route('/order', methods=['GET', 'POST'])
-def order_e():
+def order():
     form = order_form.OrderForm()
     db_sess = db_session.create_session()
-    events_list = section_view()
+    form.events.choices = give_events_list()
     if form.validate_on_submit():
-
         new_id = 1
         ordr = db_sess.query(Order).order_by(Order.id.desc()).first()
         if ordr:
             new_id = ordr.id + 1
         order = Order(id=new_id, name=form.name.data, phone_number=form.phone.data,
                       count_of_people=form.count_of_goest.data,
-                      need_date=form.need_date.data, wishes=form.wishes.data, type_of_events=form.,
+                      need_date=form.need_date.data, wishes=form.wishes.data, type_of_events=form.events.data,
                       created_date=datetime.now(), city=form.city.data)
         db_sess.add(order)
         db_sess.commit()
         db_sess.close()
         return redirect('/')
-    return render_template('order.html', title='Заявка на мероприятие', form=form, items=events_list)
+    return render_template('order.html', title='Заявка на мероприятие', form=form)
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -123,10 +139,9 @@ def logout():
 @app.route('/picture_add', methods=['GET', 'POST'])
 def picture_add():
     form = MediaAddForm()
-    db_sess = db_session.create_session()
-
-    events_list = section_view()
+    form.events.choices = give_events_list()
     if form.validate_on_submit():
+        db_sess = db_session.create_session()
         new_id = 1
         med = db_sess.query(Media).order_by(Media.id.desc()).first()
         if med:
@@ -137,8 +152,8 @@ def picture_add():
             fname=f"f{new_id:08d}{path.splitext(file.filename)[1]}",
             title=form.title.data,
             content=form.descr.data,
-            admin_id=current_user.id
-            #type_of_event=form.
+            admin_id=current_user.id,
+            type_of_events=form.events.data
         )
         file.save(f"static//img//{media.fname}")
         image = Image.open(f"static//img//{media.fname}")
@@ -148,19 +163,13 @@ def picture_add():
         db_sess.commit()
         db_sess.close()
         return redirect('/admin')
-    return render_template('picture_add.html', form=form, items=events_list)
+    return render_template('picture_add.html', form=form)
 
 
-# @app.route('/section<event_name>', methods=['GET', 'POST'])
-def section_view():
-    db_sess = db_session.create_session()
-    events_list = list(db_sess.query(TypeOfEvents).order_by(TypeOfEvents.id.desc()).all())
-    out = []
-    for i in events_list:
-        n, e = i.id, str(i.events)
-        out.append((n, e))
-    return out
-
+@app.route('/event/<int:event_id>')
+def show_photos(event_id):
+    photos = get_photos_by_event(event_id)
+    return render_template('event_photos.html', photos=photos, title='')
 
 if __name__ == '__main__':
     db_session.global_init("db/visitka.db")
@@ -171,4 +180,3 @@ if __name__ == '__main__':
     admin.add_view(ModelView(Order, db_sess, name='Заявки'))
     admin.add_view(ModelView(TypeOfEvents, db_sess, name='Мероприятия'))
     app.run(port=8080, host='127.0.0.1')
-    print(section_view())

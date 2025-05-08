@@ -2,21 +2,15 @@
 
 {% block content %}
 <form action="" method="post">
+     {{ form.hidden_tag() }}
     <h1>Заявка для связи с вами</h1>
     <div>
-        <form class="order_form" method="post">
+
             <p>{{form.name.label}}</p>
             <p>{{form.name(class="form-control")}}</p>
             <p>{{form.phone.label}}</p>
             <p>{{form.phone(class="form-control")}}</p>
-            <div class="form-group">
-                <label for="classSelect">Тип мероприятия:</label>
-                 <select class="form-control" id="classSelect" name="class">
-                {% for item in items%}
-                <option value={{item[0]}}>{{item[1]}}</option>
-                {% endfor %}
-        </select>
-            </div>
+            <p>{{ form.events.label }} {{ form.events()}}</p>
             <p>{{form.count_of_goest.label}}</p>
             <p>{{form.count_of_goest(class="form-control")}}</p>
             <p>{{form.city.label}}</p>
@@ -26,7 +20,13 @@
             <div>{{form.wishes.label}}</div>
             <div>{{form.wishes(class="form-control")}}</div>
             <button type="submit" class="btn btn-primary">Отправить</button>
-        </form>
+            {% if form.errors %}
+            <ul>
+                {% for field, errors in form.errors.items() %}
+                <li>{{ field }}: {{ errors|join(', ') }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
     </div>
 </form>
 {% endblock %}

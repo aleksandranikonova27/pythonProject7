@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block content %}
+<title>{{title}}</title>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 20px;
+    }
+
+    h1 {
+        text-align: center;
+    }
+
+    .gallery {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 15px;
+    }
+
+    .gallery-item {
+        flex: 1 1 calc(25% - 15px);
+        box-sizing: border-box;
+        position: relative;
+    }
+
+    .gallery-item img {
+        width: 100%;
+        height: auto;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+        cursor: pointer; /* Показать, что изображение кликабельно */
+    }
+
+    .gallery-item img:hover {
+        transform: scale(1.05);
+    }
+
+    @media (max-width: 768px) {
+        .gallery-item {
+            flex: 1 1 calc(50% - 15px);
+        }
+    }
+
+    @media (max-width: 480px) {
+        .gallery-item {
+            flex: 1 1 100%;
+        }
+    }
+</style>
+
+<body>
+<h1>{{title}}</h1>
+{% if photos %}
+<div class="gallery">
+    {% for photo in photos %}
+    <div class="gallery-item">
+        <img src="{{ photo }}" alt="Event Photo" width="300" data-toggle="modal" data-target="#photoModal" onclick="openModal('{{ photo }}')" />
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<p>Фотографии не найдены.</p>
+{% endif %}
+<!-- Модальное окно с кнопками навигации -->
+<div class="modal fade" id="photoModal" tabindex="-1" role="dialog" aria-labelledby="photoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="photoModalLabel">Просмотр фотографии</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <img id="modalImage" src="" alt="Фото" style="width: 100%; height: auto;">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="prevImage()">Предыдущая</button>
+                <button type="button" class="btn btn-secondary" onclick="nextImage()">Следующая</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+    var photos = {{ photos|tojson }}; // Передаем список фотографий в JavaScript
+    var currentPhotoIndex = 0;
+
+    function openModal(imageSrc) {
+        currentPhotoIndex = photos.indexOf(imageSrc); // Устанавливаем индекс текущей фотографии
+        $('#modalImage').attr('src', imageSrc);
+    }
+
+    function nextImage() {
+        currentPhotoIndex = (currentPhotoIndex + 1) % photos.length; // Переходим к следующей фотографии
+        $('#modalImage').attr('src', photos[currentPhotoIndex]); // Обновляем изображение
+    }
+
+    function prevImage() {
+        currentPhotoIndex = (currentPhotoIndex - 1 + photos.length) % photos.length; // Переходим к предыдущей фотографии
+        $('#modalImage').attr('src', photos[currentPhotoIndex]); // Обновляем изображение
+    }
+</script>
+</body>
+{% endblock %}
