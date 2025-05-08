@@ -36,19 +36,23 @@ def index():
 @app.route('/order', methods=['GET', 'POST'])
 def order_e():
     form = order_form.OrderForm()
+    db_sess = db_session.create_session()
+    events_list = section_view()
     if form.validate_on_submit():
-        db_sess = db_session.create_session()
+
         new_id = 1
         ordr = db_sess.query(Order).order_by(Order.id.desc()).first()
         if ordr:
             new_id = ordr.id + 1
-        order = Order(id=new_id, name=form.name.data, phone=form.phone.data, count_of_goest=form.count_of_goest.data,
-                      need_date=form.need_date.data, wishes=form.wishes.data)
+        order = Order(id=new_id, name=form.name.data, phone_number=form.phone.data,
+                      count_of_people=form.count_of_goest.data,
+                      need_date=form.need_date.data, wishes=form.wishes.data, type_of_events=form.,
+                      created_date=datetime.now(), city=form.city.data)
         db_sess.add(order)
         db_sess.commit()
         db_sess.close()
         return redirect('/')
-    return render_template('order.html', title='Заявка на мероприятие', form=form)
+    return render_template('order.html', title='Заявка на мероприятие', form=form, items=events_list)
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -119,8 +123,10 @@ def logout():
 @app.route('/picture_add', methods=['GET', 'POST'])
 def picture_add():
     form = MediaAddForm()
+    db_sess = db_session.create_session()
+
+    events_list = section_view()
     if form.validate_on_submit():
-        db_sess = db_session.create_session()
         new_id = 1
         med = db_sess.query(Media).order_by(Media.id.desc()).first()
         if med:
@@ -132,6 +138,7 @@ def picture_add():
             title=form.title.data,
             content=form.descr.data,
             admin_id=current_user.id
+            #type_of_event=form.
         )
         file.save(f"static//img//{media.fname}")
         image = Image.open(f"static//img//{media.fname}")
@@ -141,7 +148,18 @@ def picture_add():
         db_sess.commit()
         db_sess.close()
         return redirect('/admin')
-    return render_template('picture_add.html', form=form)
+    return render_template('picture_add.html', form=form, items=events_list)
+
+
+# @app.route('/section<event_name>', methods=['GET', 'POST'])
+def section_view():
+    db_sess = db_session.create_session()
+    events_list = list(db_sess.query(TypeOfEvents).order_by(TypeOfEvents.id.desc()).all())
+    out = []
+    for i in events_list:
+        n, e = i.id, str(i.events)
+        out.append((n, e))
+    return out
 
 
 if __name__ == '__main__':
@@ -151,4 +169,6 @@ if __name__ == '__main__':
     admin.add_view(ModelView(Admins, db_sess, name='Админы'))
     admin.add_view(ModelView(Media, db_sess, name='Управление медиа'))
     admin.add_view(ModelView(Order, db_sess, name='Заявки'))
+    admin.add_view(ModelView(TypeOfEvents, db_sess, name='Мероприятия'))
     app.run(port=8080, host='127.0.0.1')
+    print(section_view())

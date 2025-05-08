@@ -11,17 +11,16 @@
             <p>{{form.phone(class="form-control")}}</p>
             <div class="form-group">
                 <label for="classSelect">Тип мероприятия:</label>
-                <select class="form-control" id="classSelect" name="class">
-                    <option value="0">Свадьба</option>
-                    <option value="1">корпоратив</option>
-                    <option value="2">Юбилей</option>
-                    <option value="3">Выпускной</option>
-                    <option value="4">Деловое мероприятие</option>
-                    <option value="5">спортивное мероприятие</option>
-                </select>
+                 <select class="form-control" id="classSelect" name="class">
+                {% for item in items%}
+                <option value={{item[0]}}>{{item[1]}}</option>
+                {% endfor %}
+        </select>
             </div>
             <p>{{form.count_of_goest.label}}</p>
             <p>{{form.count_of_goest(class="form-control")}}</p>
+            <p>{{form.city.label}}</p>
+            <p>{{form.city(class="form-control")}}</p>
             <p>{{form.need_date.label}}</p>
             <p>{{form.need_date(class="form-control")}}</p>
             <div>{{form.wishes.label}}</div>

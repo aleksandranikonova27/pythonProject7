@@ -17,6 +17,14 @@
         </p>
         {% endfor %}
         </p>
+        </p>
+
+        <select class="form-control" id="classSelect" name="class">
+            {% for item in items%}
+            <option value={{item[0]}}>{{item[1]}}</option>
+            {% endfor %}
+        </select>
+
         <p>
             {{ form.descr.label }}<br>
             {{ form.descr(class="form-control") }}<br>

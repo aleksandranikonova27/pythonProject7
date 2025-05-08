@@ -8,6 +8,7 @@ class OrderForm(FlaskForm):
     phone = StringField('Укажите номер телефона для связи с вами:',
                              validators=[DataRequired(), Length(min=10, max=11)]) #Regexp(regex='[+-]?[0-9]$'
     type_of_event = StringField('Тип мероприятия:', validators=[DataRequired()])
+    city = StringField('Укажите город, в котором планируется мероприятие:', validators=[DataRequired()])
     count_of_goest = IntegerField('Укажите количество гостей:', validators=[DataRequired()])
     need_date = DateField("Когда планируется мероприятие?", validators=[DataRequired()])
     wishes = TextAreaField('Расскажите подробнее о своих пожеланиях:', validators=[DataRequired()])
