@@ -18,26 +18,13 @@
             &#9776;
         </button>
         <div class="collapse navbar-collapse" id="exCollapsingNavbar">
-            <a class="navbar-brand" href="#">Ведущий Ярослав Никонов </a>
+            <a class="navbar-brand" href="/">Ведущий Ярослав Никонов </a>
             <ul class="navbar-nav">
-
-
+                 {% for event in g.events %}
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Свадьбы</a>
+                    <a class="nav-link" href="/event/{{event[0]}}">{{event[1]}}</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Корпоративы</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Юбилеи</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Выпускные</a>
-                </li>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Спортивные мероприятия</a>
-                </li>
+                {% endfor %}
             </ul>
         </div>
     </nav>

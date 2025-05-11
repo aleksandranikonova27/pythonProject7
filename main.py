@@ -1,5 +1,7 @@
 from os import path, remove
-from flask import Flask, render_template, redirect, request, abort
+
+import flask
+from flask import Flask, render_template, redirect, request, abort, g, url_for
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user, login_manager
 from datetime import datetime
 from PIL import Image
@@ -35,6 +37,11 @@ def get_photos_by_event(event_id):
     med = db_sess.query(Media).filter(Media.type_of_events == event_id).all()
     if med:
         return [f'/static/thumb/{photo.fname}' for photo in med]
+
+
+@app.before_request
+def before_request():
+    g.events = give_events_list()
 
 
 @login_manager.user_loader
@@ -111,31 +118,6 @@ def logout():
     return redirect("/")
 
 
-# @app.route('/picview/<int:med_id>', methods=['GET', 'POST'])
-# def picview(med_id=0):
-#     db_sess = db_session.create_session()
-#     med = db_sess.query(Media).filter(med_id == Media.id).first()
-#     if med:
-#         form_med_edit = MediaEditForm()
-#         form_med_del = MediaDelForm()
-#         if request.method == "GET":
-#             form_med_edit.title.data = med.title
-#             form_med_edit.descr.data = med.content
-#         if form_med_edit.validate_on_submit() and form_med_edit.title.data:
-#             med.title = form_med_edit.title.data
-#             med.descr = form_med_edit.descr.data
-#             db_sess.commit()
-#         if form_med_del.validate_on_submit() and form_med_del.pic_id.data:
-#             db_sess.delete(med)
-#             db_sess.commit()
-#             remove(f"static//photos//{med.filename}")
-#             remove(f"static//thumb//{med.filename}")
-#             return redirect(f"/index/{current_user.id}")
-#         return render_template('picview.html', pic=med,
-#                                form_pic_del=form_med_del, form_pic_edit=form_med_edit)
-#     db_sess.close()
-#     abort(404)
-
 @app.route('/picture_add', methods=['GET', 'POST'])
 def picture_add():
     form = MediaAddForm()
@@ -169,7 +151,10 @@ def picture_add():
 @app.route('/event/<int:event_id>')
 def show_photos(event_id):
     photos = get_photos_by_event(event_id)
-    return render_template('event_photos.html', photos=photos, title='')
+    db_sess = db_session.create_session()
+    title = ""
+    return render_template('event_photos.html', photos=photos, title=title)
+
 
 if __name__ == '__main__':
     db_session.global_init("db/visitka.db")
@@ -179,4 +164,4 @@ if __name__ == '__main__':
     admin.add_view(ModelView(Media, db_sess, name='Управление медиа'))
     admin.add_view(ModelView(Order, db_sess, name='Заявки'))
     admin.add_view(ModelView(TypeOfEvents, db_sess, name='Мероприятия'))
-    app.run(port=8080, host='127.0.0.1')
+app.run(port=8080, host='127.0.0.1')
