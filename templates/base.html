@@ -20,7 +20,7 @@
         <div class="collapse navbar-collapse" id="exCollapsingNavbar">
             <a class="navbar-brand" href="/">Ведущий Ярослав Никонов </a>
             <ul class="navbar-nav">
-                 {% for event in g.events %}
+                 {% for event in ev_list %}
                 <li class="nav-item">
                     <a class="nav-link" href="/event/{{event[0]}}">{{event[1]}}</a>
                 </li>

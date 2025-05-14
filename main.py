@@ -22,6 +22,16 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 
 
+class MyModelView(ModelView):
+
+    def is_accessible(self):
+        return current_user.is_authenticated
+
+    def inaccessible_callback(self, name, **kwargs):
+        return redirect("/login")
+
+
+@app.context_processor
 def give_events_list():
     db_sess = db_session.create_session()
     events_list = list(db_sess.query(TypeOfEvents).order_by(TypeOfEvents.id.desc()).all())
@@ -29,19 +39,19 @@ def give_events_list():
     for i in events_list:
         n, e = i.id, str(i.events)
         out.append((n, e))
-    return out
+    return dict(ev_list=out)
 
 
 def get_photos_by_event(event_id):
     db_sess = db_session.create_session()
     med = db_sess.query(Media).filter(Media.type_of_events == event_id).all()
     if med:
-        return [f'/static/thumb/{photo.fname}' for photo in med]
+        return [f'/static/img/{photo.fname}' for photo in med]
 
 
-@app.before_request
-def before_request():
-    g.events = give_events_list()
+# @app.before_request
+# def before_request():
+#     g.events = give_events_list()
 
 
 @login_manager.user_loader
@@ -160,8 +170,8 @@ if __name__ == '__main__':
     db_session.global_init("db/visitka.db")
     db_sess = db_session.create_session()
     admin = Admin(app, name='Админка', template_mode='bootstrap3')
-    admin.add_view(ModelView(Admins, db_sess, name='Админы'))
-    admin.add_view(ModelView(Media, db_sess, name='Управление медиа'))
-    admin.add_view(ModelView(Order, db_sess, name='Заявки'))
-    admin.add_view(ModelView(TypeOfEvents, db_sess, name='Мероприятия'))
+    admin.add_view(MyModelView(Admins, db_sess, name='Админы'))
+    admin.add_view(MyModelView(Media, db_sess, name='Управление медиа'))
+    admin.add_view(MyModelView(Order, db_sess, name='Заявки'))
+    admin.add_view(MyModelView(TypeOfEvents, db_sess, name='Мероприятия'))
 app.run(port=8080, host='127.0.0.1')
