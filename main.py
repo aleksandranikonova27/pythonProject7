@@ -1,8 +1,8 @@
-from os import path, remove
+from os import path
 
 import flask
-from flask import Flask, render_template, redirect, request, abort, g, url_for
-from flask_login import LoginManager, login_user, logout_user, login_required, current_user, login_manager
+from flask import Flask, render_template, redirect
+from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from datetime import datetime
 from PIL import Image
 from data import db_session
@@ -11,9 +11,9 @@ from data.media import Media
 from data.admins import Admins
 from data.orders import Order
 from data.type_of_events import TypeOfEvents
-from forms.media_form import MediaEditForm, MediaAddForm, MediaDelForm
-from forms.user import RegisterForm, LoginForm, UserEditForm, ChangePasswordForm, UserSortForm
-from flask_admin import Admin, BaseView, expose
+from forms.media_form import MediaAddForm
+from forms.user import RegisterForm, LoginForm
+from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 
 app = Flask(__name__)
