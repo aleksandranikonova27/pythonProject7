@@ -49,9 +49,6 @@ def get_photos_by_event(event_id):
         return [f'/static/img/{photo.fname}' for photo in med]
 
 
-# @app.before_request
-# def before_request():
-#     g.events = give_events_list()
 
 
 @login_manager.user_loader
